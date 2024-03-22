@@ -20,6 +20,11 @@ namespace DotPulsar.Abstractions;
 public interface IState<TState> where TState : notnull
 {
     /// <summary>
+    /// Represents the current state
+    /// </summary>
+    TState CurrentState { get; }
+
+    /// <summary>
     /// Ask whether the current state is final, meaning that it will never change.
     /// </summary>
     /// <returns>

@@ -24,6 +24,7 @@ public interface IConsumerChannel<TMessage> : IAsyncDisposable
     Task Send(CommandUnsubscribe command, CancellationToken cancellationToken);
     Task Send(CommandSeek command, CancellationToken cancellationToken);
     Task<MessageId> Send(CommandGetLastMessageId command, CancellationToken cancellationToken);
+    bool TryReceiveBuffered(out IMessage<TMessage>? message);
     ValueTask<IMessage<TMessage>> Receive(CancellationToken cancellationToken);
     ValueTask ClosedByClient(CancellationToken cancellationToken);
 }

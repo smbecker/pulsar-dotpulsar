@@ -70,6 +70,8 @@ public sealed class SubConsumer<TMessage> : IConsumer<TMessage>, IContainsChanne
     public async ValueTask<ConsumerState> OnStateChangeFrom(ConsumerState state, CancellationToken cancellationToken)
         => await _state.StateChangedFrom(state, cancellationToken).ConfigureAwait(false);
 
+    public ConsumerState CurrentState => _state.CurrentState;
+
     public bool IsFinalState()
         => _state.IsFinalState();
 
@@ -89,6 +91,12 @@ public sealed class SubConsumer<TMessage> : IConsumer<TMessage>, IContainsChanne
     {
         await _channel.ClosedByClient(CancellationToken.None).ConfigureAwait(false);
         await _channel.DisposeAsync().ConfigureAwait(false);
+    }
+
+    public bool TryReceiveBuffered(out IMessage<TMessage>? message)
+    {
+        Guard();
+        return _channel.TryReceiveBuffered(out message);
     }
 
     public async ValueTask<IMessage<TMessage>> Receive(CancellationToken cancellationToken)

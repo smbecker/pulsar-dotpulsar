@@ -70,6 +70,12 @@ public sealed class ConsumerChannel<TMessage> : IConsumerChannel<TMessage>
         _firstFlow = true;
     }
 
+    public bool TryReceiveBuffered(out IMessage<TMessage>? message)
+    {
+        message = _batchHandler.GetNext();
+        return message is not null;
+    }
+
     public async ValueTask<IMessage<TMessage>> Receive(CancellationToken cancellationToken)
     {
         using (await _lock.Lock(cancellationToken).ConfigureAwait(false))

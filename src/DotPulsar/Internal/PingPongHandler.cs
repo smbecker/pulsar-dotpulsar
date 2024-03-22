@@ -86,6 +86,8 @@ public sealed class PingPongHandler : IState<PingPongHandlerState>, IAsyncDispos
         return new ValueTask();
     }
 
+    public PingPongHandlerState CurrentState => _stateManager.CurrentState;
+
     public bool IsFinalState() => _stateManager.IsFinalState();
 
     public bool IsFinalState(PingPongHandlerState state) => _stateManager.IsFinalState(state);

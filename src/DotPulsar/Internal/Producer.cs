@@ -169,6 +169,9 @@ public sealed class Producer<TMessage> : IProducer<TMessage>, IRegisterEvent
         process.Start();
         return producer;
     }
+
+    public ProducerState CurrentState => _state.CurrentState;
+
     public bool IsFinalState()
         => _state.IsFinalState();
 

@@ -20,6 +20,13 @@ namespace DotPulsar.Abstractions;
 public interface IReceive<TMessage>
 {
     /// <summary>
+    /// Try to receive a single message from the buffer.
+    /// </summary>
+    /// <param name="message">The received message</param>
+    /// <returns>true if successfully received message</returns>
+    bool TryReceiveBuffered(out TMessage? message);
+
+    /// <summary>
     /// Receive a single message.
     /// </summary>
     ValueTask<TMessage> Receive(CancellationToken cancellationToken = default);

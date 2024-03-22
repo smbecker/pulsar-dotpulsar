@@ -144,6 +144,8 @@ public sealed class Reader<TMessage> : IReader<TMessage>
     public async ValueTask<ReaderState> OnStateChangeFrom(ReaderState state, CancellationToken cancellationToken)
         => await _state.StateChangedFrom(state, cancellationToken).ConfigureAwait(false);
 
+    public ReaderState CurrentState => _state.CurrentState;
+
     public bool IsFinalState()
         => _state.IsFinalState();
 
@@ -175,6 +177,26 @@ public sealed class Reader<TMessage> : IReader<TMessage>
             messageIds.Add(getLastMessageIdsTasks[i].Result);
         }
         return messageIds;
+    }
+
+    public bool TryReceiveBuffered(out IMessage<TMessage>? message)
+    {
+        message = default;
+
+        if (!_allSubReadersAreReady)
+            return false;
+
+        if (_faultException is not null)
+            throw new ConsumerFaultedException(_faultException);
+
+        if (!_isPartitionedTopic)
+            return _subReaders[_subReaderIndex].TryReceiveBuffered(out message);
+
+        for (var i = 0; i < _numberOfPartitions; i++)
+            if (_subReaders[i].TryReceiveBuffered(out message))
+                return true;
+
+        return false;
     }
 
     public async ValueTask<IMessage<TMessage>> Receive(CancellationToken cancellationToken)

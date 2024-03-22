@@ -153,6 +153,8 @@ public sealed class Consumer<TMessage> : IConsumer<TMessage>
     public async ValueTask<ConsumerState> OnStateChangeFrom(ConsumerState state, CancellationToken cancellationToken)
         => await _state.StateChangedFrom(state, cancellationToken).ConfigureAwait(false);
 
+    public ConsumerState CurrentState => _state.CurrentState;
+
     public bool IsFinalState()
         => _state.IsFinalState();
 
@@ -173,6 +175,26 @@ public sealed class Consumer<TMessage> : IConsumer<TMessage>
             await subConsumer.DisposeAsync().ConfigureAwait(false);
 
         _state.SetState(ConsumerState.Closed);
+    }
+
+    public bool TryReceiveBuffered(out IMessage<TMessage>? message)
+    {
+        message = default;
+
+        if (!_allSubConsumersAreReady)
+            return false;
+
+        if (_faultException is not null)
+            throw new ConsumerFaultedException(_faultException);
+
+        if (!_isPartitionedTopic)
+            return _subConsumers[_subConsumerIndex].TryReceiveBuffered(out message);
+
+        for (var i = 0; i < _numberOfPartitions; i++)
+            if (_subConsumers[i].TryReceiveBuffered(out message))
+                return true;
+
+        return false;
     }
 
     public async ValueTask<IMessage<TMessage>> Receive(CancellationToken cancellationToken)

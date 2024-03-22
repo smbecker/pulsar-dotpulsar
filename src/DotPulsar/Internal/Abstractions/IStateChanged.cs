@@ -20,6 +20,11 @@ namespace DotPulsar.Internal.Abstractions;
 public interface IStateChanged<TState> where TState : notnull
 {
     /// <summary>
+    /// Represents the current state
+    /// </summary>
+    TState CurrentState { get; }
+
+    /// <summary>
     /// Wait for the state to change to a specific state.
     /// </summary>
     /// <returns>

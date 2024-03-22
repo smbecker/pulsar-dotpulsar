@@ -70,6 +70,8 @@ public sealed class SubProducer : IContainsChannel, IState<ProducerState>
     public async ValueTask<ProducerState> OnStateChangeFrom(ProducerState state, CancellationToken cancellationToken)
         => await _state.StateChangedFrom(state, cancellationToken).ConfigureAwait(false);
 
+    public ProducerState CurrentState => _state.CurrentState;
+
     public bool IsFinalState()
         => _state.IsFinalState();
 

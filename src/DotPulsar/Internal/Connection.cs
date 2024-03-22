@@ -382,6 +382,8 @@ public sealed class Connection : IConnection
             throw new ConnectionDisposedException();
     }
 
+    public ConnectionState CurrentState => _stateManager.CurrentState;
+
     public bool IsFinalState() => _stateManager.IsFinalState();
 
     public bool IsFinalState(ConnectionState state) => _stateManager.IsFinalState(state);

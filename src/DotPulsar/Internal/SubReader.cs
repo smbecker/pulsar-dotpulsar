@@ -63,6 +63,8 @@ public sealed class SubReader<TMessage> : IContainsChannel, IReader<TMessage>
     public async ValueTask<ReaderState> OnStateChangeFrom(ReaderState state, CancellationToken cancellationToken)
         => await _state.StateChangedFrom(state, cancellationToken).ConfigureAwait(false);
 
+    public ReaderState CurrentState => _state.CurrentState;
+
     public bool IsFinalState()
         => _state.IsFinalState();
 
@@ -79,6 +81,12 @@ public sealed class SubReader<TMessage> : IContainsChannel, IReader<TMessage>
     {
         Guard();
         return await _channel.Send(command, cancellationToken).ConfigureAwait(false);
+    }
+
+    public bool TryReceiveBuffered(out IMessage<TMessage>? message)
+    {
+        Guard();
+        return _channel.TryReceiveBuffered(out message);
     }
 
     public async ValueTask<IMessage<TMessage>> Receive(CancellationToken cancellationToken)

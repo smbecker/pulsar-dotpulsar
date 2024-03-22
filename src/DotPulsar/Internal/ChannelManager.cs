@@ -303,6 +303,8 @@ public sealed class ChannelManager : IState<ChannelManagerState>, IDisposable
             _stateManager.SetState(ChannelManagerState.Inactive);
     }
 
+    public ChannelManagerState CurrentState => _stateManager.CurrentState;
+
     public bool IsFinalState() => _stateManager.IsFinalState();
 
     public bool IsFinalState(ChannelManagerState state) => _stateManager.IsFinalState(state);
